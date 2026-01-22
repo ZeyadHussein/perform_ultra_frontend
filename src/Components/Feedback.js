@@ -1,3 +1,4 @@
+"use client"; // Required for client-side hooks
 import React, { useEffect, useState, useContext } from "react";
 import Sidebar from "./Sidebar";
 import axios from "axios";
@@ -10,25 +11,28 @@ import {
   faGooglePlus,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { ThemeContext } from "../context/ThemeContext";
 import "../Styles/Feedback.css";
 
 const Feedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const token = localStorage.getItem("token");
   const { darkMode } = useContext(ThemeContext);
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://perform-ultra-backend.vercel.app/api";
 
   useEffect(() => {
+    if (!token) return;
+
     const fetchUserFeedback = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/userfeedback",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const response = await axios.get(`${API_URL}/userfeedback`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setFeedbacks(response.data);
       } catch (error) {
         console.error("Error fetching feedback:", error);
@@ -36,7 +40,7 @@ const Feedback = () => {
     };
 
     fetchUserFeedback();
-  }, [token]);
+  }, [token, API_URL]);
 
   return (
     <>
@@ -85,40 +89,32 @@ const Feedback = () => {
         </div>
       </div>
 
-      {/* Footer moved outside all main containers */}
+      {/* Footer */}
       <footer>
         <div className="footerContain">
           <div className="socialIcons">
-            <button onClick={() => console.log("Facebook")}>
-              <FontAwesomeIcon icon={faFacebook} size="2x" />
-            </button>
-            <button onClick={() => console.log("Instagram")}>
-              <FontAwesomeIcon icon={faInstagram} size="2x" />
-            </button>
-            <button onClick={() => console.log("Twitter")}>
-              <FontAwesomeIcon icon={faTwitter} size="2x" />
-            </button>
-            <button onClick={() => console.log("Google Plus")}>
-              <FontAwesomeIcon icon={faGooglePlus} size="2x" />
-            </button>
-            <button onClick={() => console.log("YouTube")}>
-              <FontAwesomeIcon icon={faYoutube} size="2x" />
-            </button>
+            {[faFacebook, faInstagram, faTwitter, faGooglePlus, faYoutube].map(
+              (icon, i) => (
+                <button key={i} onClick={() => console.log(icon.iconName)}>
+                  <FontAwesomeIcon icon={icon} size="2x" />
+                </button>
+              ),
+            )}
           </div>
 
           <div className="footerNav">
             <ul>
               <li>
-                <Link to="/Homepage">Home</Link>
+                <Link href="/homepage">Home</Link>
               </li>
               <li>
-                <Link to="/news">News</Link>
+                <Link href="/news">News</Link>
               </li>
               <li>
-                <Link to="/about">About</Link>
+                <Link href="/about">About</Link>
               </li>
               <li>
-                <Link to="/contact">Contact Us</Link>
+                <Link href="/contact">Contact Us</Link>
               </li>
             </ul>
           </div>

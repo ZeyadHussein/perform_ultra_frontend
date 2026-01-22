@@ -1,96 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Sidebar from './Sidebar';
-import '../Styles/ManageProjects.css';
+"use client"; // For client-side hooks
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Sidebar from "./Sidebar";
+import "../Styles/ManageProjects.css";
 
 const ManageProjects = () => {
   const [projects, setProjects] = useState([]);
   const [form, setForm] = useState({
-    Project_name: '',
-    Start_date: '',
-    End_date: '',
-    Budget: '',
+    Project_name: "",
+    Start_date: "",
+    End_date: "",
+    Budget: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [showProjects, setShowProjects] = useState(false);
 
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://perform-ultra-backend.vercel.app/api";
+
+  // ✅ fetchProjects moved inside useEffect to fix ESLint warning
   useEffect(() => {
-    axios.get('http://localhost:5000/api/projects')
-      .then(res => setProjects(res.data))
-      .catch(err => {
-        alert('Failed to load projects');
+    const fetchProjects = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/projects`);
+        setProjects(res.data);
+      } catch (err) {
+        alert("Failed to load projects");
         console.error(err);
-      });
-  }, []);
+      }
+    };
+
+    fetchProjects();
+  }, [API_URL]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toISOString().split('T')[0];
+    if (!dateString) return "N/A";
+    return new Date(dateString).toISOString().split("T")[0];
   };
 
   const handleSave = async () => {
     if (!form.Project_name.trim()) {
-      alert('Project Name is required');
+      alert("Project Name is required");
       return;
     }
 
     const budgetValue = form.Budget ? parseFloat(form.Budget) : null;
-
-    const payload = {
-      ...form,
-      Budget: budgetValue,
-    };
+    const payload = { ...form, Budget: budgetValue };
 
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/projects/${editingId}`, payload);
-        alert('Project updated');
+        await axios.put(`${API_URL}/projects/${editingId}`, payload);
+        alert("Project updated");
       } else {
-        await axios.post('http://localhost:5000/api/projects', payload);
-        alert('Project created');
+        await axios.post(`${API_URL}/projects`, payload);
+        alert("Project created");
       }
 
-      setForm({ Project_name: '', Start_date: '', End_date: '', Budget: '' });
+      setForm({ Project_name: "", Start_date: "", End_date: "", Budget: "" });
       setEditingId(null);
 
-      const res = await axios.get('http://localhost:5000/api/projects');
+      // Refresh projects list
+      const res = await axios.get(`${API_URL}/projects`);
       setProjects(res.data);
     } catch (err) {
-      alert('Failed to save project');
+      alert("Failed to save project");
       console.error(err);
     }
   };
 
   const handleEdit = (project) => {
     setForm({
-      Project_name: project.Project_name || '',
-      Start_date: project.Start_date ? formatDate(project.Start_date) : '',
-      End_date: project.End_date ? formatDate(project.End_date) : '',
-      Budget: project.Budget ? project.Budget.toString() : '',
+      Project_name: project.Project_name || "",
+      Start_date: project.Start_date ? formatDate(project.Start_date) : "",
+      End_date: project.End_date ? formatDate(project.End_date) : "",
+      Budget: project.Budget ? project.Budget.toString() : "",
     });
     setEditingId(project.Project_ID);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this project?')) return;
+    if (!window.confirm("Are you sure you want to delete this project?"))
+      return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/projects/${id}`);
-      alert('Project deleted');
+      await axios.delete(`${API_URL}/projects/${id}`);
+      alert("Project deleted");
 
       if (editingId === id) {
-        setForm({ Project_name: '', Start_date: '', End_date: '', Budget: '' });
+        setForm({ Project_name: "", Start_date: "", End_date: "", Budget: "" });
         setEditingId(null);
       }
 
-      const res = await axios.get('http://localhost:5000/api/projects');
+      // Refresh projects list
+      const res = await axios.get(`${API_URL}/projects`);
       setProjects(res.data);
     } catch (err) {
-      alert('Failed to delete project');
+      alert("Failed to delete project");
       console.error(err);
     }
   };
@@ -147,14 +157,14 @@ const ManageProjects = () => {
           </div>
 
           <button onClick={handleSave} disabled={!form.Project_name.trim()}>
-            {editingId ? 'Update Project' : 'Save Project'}
+            {editingId ? "Update Project" : "Save Project"}
           </button>
 
           <br />
 
-          <h4 style={{ marginTop: '20px' }}>Project List</h4>
+          <h4 style={{ marginTop: "20px" }}>Project List</h4>
           <button onClick={() => setShowProjects(!showProjects)}>
-            {showProjects ? 'Hide Projects' : 'Show Projects'}
+            {showProjects ? "Hide Projects" : "Show Projects"}
           </button>
 
           {showProjects && (
@@ -166,10 +176,17 @@ const ManageProjects = () => {
                   <div className="project-item" key={proj.Project_ID}>
                     <strong>{proj.Project_name}</strong>
                     <br />
-                    Start: {formatDate(proj.Start_date)} | End: {formatDate(proj.End_date)} | Budget: ${proj.Budget || '0.00'}
+                    Start: {formatDate(proj.Start_date)} | End:{" "}
+                    {formatDate(proj.End_date)} | Budget: $
+                    {proj.Budget || "0.00"}
                     <div className="project-actions">
                       <button onClick={() => handleEdit(proj)}>Edit</button>
-                      <button className="delete-btn" onClick={() => handleDelete(proj.Project_ID)}>Delete</button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDelete(proj.Project_ID)}
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ))

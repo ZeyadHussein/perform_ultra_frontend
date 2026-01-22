@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
 const ProfileSettings = () => {
+  const API_URL = process.env.REACT_APP_API_URL || "https://perform-ultra-backend.vercel.app/api";
   const [profile, setProfile] = useState({
     Name: "",
     Email: "",
@@ -20,11 +21,14 @@ const ProfileSettings = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
+    if (!token || !userId) return;
+
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/user/profile", {
+        const res = await axios.get(`${API_URL}/user/profile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProfile(res.data);
@@ -38,7 +42,7 @@ const ProfileSettings = () => {
     };
 
     fetchProfile();
-  }, [token]);
+  }, [token, userId, API_URL]);
 
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
@@ -51,7 +55,7 @@ const ProfileSettings = () => {
     setIsSubmitting(true);
 
     try {
-      await axios.put("http://localhost:5000/api/user/profile", profile, {
+      await axios.put(`${API_URL}/user/profile/${userId}`, profile, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("Profile updated successfully!");

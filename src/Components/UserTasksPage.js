@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
@@ -20,7 +21,9 @@ const UserTasksPage = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:5000/api/user-assignments/${userId}`);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/user-assignments/${userId}`,
+      );
       setTasks(response.data);
     } catch (err) {
       console.error(err);

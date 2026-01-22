@@ -1,24 +1,26 @@
+"use client"; // Required for client-side React hooks
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
 import "../Styles/performance.css";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 const EmployeePerformance = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://perform-ultra-backend.vercel.app/api";
 
   useEffect(() => {
     const fetchPerformanceData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        navigate("/login"); // Redirect if not logged in
+        router.push("/login"); // Redirect if not logged in
         return;
       }
 
       try {
-        const response = await axios.get("http://localhost:5000/api/perfor", {
+        const response = await axios.get(`${API_URL}/perfor`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -32,7 +34,7 @@ const EmployeePerformance = () => {
     };
 
     fetchPerformanceData();
-  }, [navigate]);
+  }, [router, API_URL]);
 
   return (
     <div className="performance-container">

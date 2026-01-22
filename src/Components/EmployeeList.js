@@ -1,6 +1,7 @@
+"use client"; // required for Next.js client components
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,
@@ -13,6 +14,8 @@ import Sidebar from "./Sidebar";
 import "../Styles/EmployeeList.css";
 
 const EmployeeList = () => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://perform-ultra-backend.vercel.app/api";
+
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,8 +25,8 @@ const EmployeeList = () => {
     const fetchData = async () => {
       try {
         const [empRes, deptRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/employees-with-users"),
-          axios.get("http://localhost:5000/api/departments"),
+          axios.get(`${API_URL}/employees-with-users`),
+          axios.get(`${API_URL}/departments`),
         ]);
         setEmployees(empRes.data);
         setDepartments(deptRes.data);
@@ -35,7 +38,7 @@ const EmployeeList = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [API_URL]);
 
   const groupEmployeesByDepartment = () => {
     const grouped = {};
@@ -45,9 +48,7 @@ const EmployeeList = () => {
     grouped["Unassigned"] = [];
     employees.forEach((emp) => {
       const dept = emp.Department_name || "Unassigned";
-      if (!grouped[dept]) {
-        grouped[dept] = [];
-      }
+      if (!grouped[dept]) grouped[dept] = [];
       grouped[dept].push(emp);
     });
     return grouped;
@@ -70,10 +71,7 @@ const EmployeeList = () => {
         ) : error ? (
           <div className="error-container">
             <p className="error-message">{error}</p>
-            <button
-              className="retry-button"
-              onClick={() => window.location.reload()}
-            >
+            <button className="retry-button" onClick={() => window.location.reload()}>
               Retry
             </button>
           </div>
@@ -93,9 +91,7 @@ const EmployeeList = () => {
                             <span className="employee-details">
                               ${emp.hourly_rate}/hr | {emp.Email}
                             </span>
-                            {emp.Role && (
-                              <span className="employee-role">{emp.Role}</span>
-                            )}
+                            {emp.Role && <span className="employee-role">{emp.Role}</span>}
                           </div>
                         </li>
                       ))}
@@ -109,35 +105,25 @@ const EmployeeList = () => {
         <footer>
           <div className="footerContainer">
             <div className="socialIcons">
-              <button onClick={() => console.log("Facebook")}>
-                <FontAwesomeIcon icon={faFacebook} size="2x" />
-              </button>
-              <button onClick={() => console.log("Instagram")}>
-                <FontAwesomeIcon icon={faInstagram} size="2x" />
-              </button>
-              <button onClick={() => console.log("Twitter")}>
-                <FontAwesomeIcon icon={faTwitter} size="2x" />
-              </button>
-              <button onClick={() => console.log("Google Plus")}>
-                <FontAwesomeIcon icon={faGooglePlus} size="2x" />
-              </button>
-              <button onClick={() => console.log("YouTube")}>
-                <FontAwesomeIcon icon={faYoutube} size="2x" />
-              </button>
+              {[faFacebook, faInstagram, faTwitter, faGooglePlus, faYoutube].map((icon, i) => (
+                <button key={i} onClick={() => console.log(icon.iconName)}>
+                  <FontAwesomeIcon icon={icon} size="2x" />
+                </button>
+              ))}
             </div>
             <div className="footerNav">
               <ul>
                 <li>
-                  <Link to="/homepage">Home</Link>
+                  <Link href="/homepage">Home</Link>
                 </li>
                 <li>
-                  <Link to="/news">News</Link>
+                  <Link href="/news">News</Link>
                 </li>
                 <li>
-                  <Link to="/about">About</Link>
+                  <Link href="/about">About</Link>
                 </li>
                 <li>
-                  <Link to="/contact">Contact Us</Link>
+                  <Link href="/contact">Contact Us</Link>
                 </li>
               </ul>
             </div>

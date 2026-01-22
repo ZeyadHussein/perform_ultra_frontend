@@ -1,5 +1,6 @@
+"use client"; // Enables client-side hooks
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,7 +14,8 @@ import Sidebar from "./Sidebar";
 import "../Styles/AssignTask.css";
 import bgImage from "../images/bg.jpg";
 
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 const TeamPage = () => {
   const [team, setTeam] = useState({
@@ -31,7 +33,7 @@ const TeamPage = () => {
       try {
         const deptResponse = await axios.get("/departments");
         setDepartments(deptResponse.data);
-        
+
         if (deptResponse.data.length > 0) {
           setTeam((prev) => ({
             ...prev,
@@ -100,10 +102,11 @@ const TeamPage = () => {
   };
 
   return (
-    <div className="team-container" style={{ backgroundImage: `url(${bgImage})` }}>
+    <div
+      className="team-container"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
       <Sidebar />
-      <br></br>
-      <br></br>
       <main className="team-content">
         <div className="container">
           <h1>Team Management</h1>
@@ -111,14 +114,21 @@ const TeamPage = () => {
           {error && (
             <div className="error-message">
               <strong>Error:</strong> {error}
-              <button onClick={() => setError(null)} className="close-error">×</button>
+              <button onClick={() => setError(null)} className="close-error">
+                ×
+              </button>
             </div>
           )}
 
           {success && (
             <div className="success-message">
               <strong>Success:</strong> {success}
-              <button onClick={() => setSuccess(null)} className="close-success">×</button>
+              <button
+                onClick={() => setSuccess(null)}
+                className="close-success"
+              >
+                ×
+              </button>
             </div>
           )}
 
@@ -152,7 +162,10 @@ const TeamPage = () => {
                     required
                   >
                     {departments.map((dept) => (
-                      <option key={dept.Department_ID} value={dept.Department_ID}>
+                      <option
+                        key={dept.Department_ID}
+                        value={dept.Department_ID}
+                      >
                         {dept.Department_name}
                       </option>
                     ))}
@@ -164,13 +177,14 @@ const TeamPage = () => {
                 <button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? "Creating..." : "Create Team"}
                 </button>
-                <button type="button" onClick={resetForm}>Reset Form</button>
+                <button type="button" onClick={resetForm}>
+                  Reset Form
+                </button>
               </div>
             </form>
           </div>
         </div>
-        <br></br>
-        <br></br>
+
         <footer className="employee-footer">
           <div className="footerContainer">
             <div className="socialIcons">
@@ -192,10 +206,18 @@ const TeamPage = () => {
             </div>
             <div className="footerNav">
               <ul>
-                <li><Link to="/homepage">Home</Link></li>
-                <li><Link to="/news">News</Link></li>
-                <li><Link to="/about">About</Link></li>
-                <li><Link to="/contact">Contact Us</Link></li>
+                <li>
+                  <Link href="/homepage">Home</Link>
+                </li>
+                <li>
+                  <Link href="/news">News</Link>
+                </li>
+                <li>
+                  <Link href="/about">About</Link>
+                </li>
+                <li>
+                  <Link href="/contact">Contact Us</Link>
+                </li>
               </ul>
             </div>
             <div className="footerBottom">

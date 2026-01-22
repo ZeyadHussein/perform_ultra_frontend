@@ -1,3 +1,4 @@
+"use client"; // required for Next.js 13+ app directory for client-side hooks
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import axios from "axios";
@@ -21,7 +22,7 @@ import {
   faGooglePlus,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import "../Styles/Dashboard.css";
 
 const generateUniqueColors = (count) => {
@@ -36,6 +37,8 @@ const generateUniqueColors = (count) => {
 };
 
 const DashboardCharts = () => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://perform-ultra-backend.vercel.app/api";
+
   const [employees, setEmployees] = useState([]);
   const [managersWithUsers, setManagersWithUsers] = useState([]);
   const [taskSummary, setTaskSummary] = useState({
@@ -43,33 +46,33 @@ const DashboardCharts = () => {
     completed: 0,
     incomplete: 0,
   });
+
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
   const [selectedBar, setSelectedBar] = useState(null);
 
   useEffect(() => {
+    // Fetch Employees
     axios
-      .get("http://localhost:5000/api/employees-with-users")
+      .get(`${API_URL}/employees-with-users`)
       .then((res) => setEmployees(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error fetching employees:", err));
 
+    // Fetch Managers with Users
     axios
-      .get("http://localhost:5000/api/managers-with-users")
+      .get(`${API_URL}/managers-with-users`)
       .then((res) => setManagersWithUsers(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error fetching managers:", err));
 
+    // Fetch Task Summary
     axios
-      .get("http://localhost:5000/api/task-assignment-summary")
+      .get(`${API_URL}/task-assignment-summary`)
       .then((res) => setTaskSummary(res.data))
-      .catch((err) => console.error(err));
-  }, []);
+      .catch((err) => console.error("Error fetching task summary:", err));
+  }, [API_URL]);
 
   // Task stats
-  const {
-    total: totalTasks,
-    completed: completedTasks,
-    incomplete: incompletedTasks,
-  } = taskSummary;
+  const { total: totalTasks, completed: completedTasks, incomplete: incompletedTasks } = taskSummary;
 
   // Department Pie Chart
   const departmentCounts = employees.reduce((acc, emp) => {
@@ -77,9 +80,7 @@ const DashboardCharts = () => {
     acc[dept] = (acc[dept] || 0) + 1;
     return acc;
   }, {});
-  const departmentPieData = Object.entries(departmentCounts).map(
-    ([name, value]) => ({ name, value }),
-  );
+  const departmentPieData = Object.entries(departmentCounts).map(([name, value]) => ({ name, value }));
   const departmentColors = generateUniqueColors(departmentPieData.length);
 
   // Average hourly rate per department
@@ -98,13 +99,8 @@ const DashboardCharts = () => {
   // Role Distribution Pie Chart
   const uniqueEmployeeIDs = new Set(employees.map((emp) => emp.User_ID));
   const uniqueManagerIDs = new Set(managersWithUsers.map((mgr) => mgr.User_ID));
-
-  const onlyManagers = [...uniqueManagerIDs].filter(
-    (id) => !uniqueEmployeeIDs.has(id),
-  );
-  const onlyEmployees = [...uniqueEmployeeIDs].filter(
-    (id) => !uniqueManagerIDs.has(id),
-  );
+  const onlyManagers = [...uniqueManagerIDs].filter((id) => !uniqueEmployeeIDs.has(id));
+  const onlyEmployees = [...uniqueEmployeeIDs].filter((id) => !uniqueManagerIDs.has(id));
   const roleDistributionData = [
     { name: "Only Managers", value: onlyManagers.length },
     { name: "Only Employees", value: onlyEmployees.length },
@@ -140,106 +136,95 @@ const DashboardCharts = () => {
           </div>
         </div>
 
-        <div className="dashboard-visuals">
-          <div className="chart-box">
-            <h3>Employees per Department</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <PieChart>
-                <Pie
-                  data={departmentPieData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={3}
-                  label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                  onClick={(data) => setSelectedDepartment(data.name)}
-                >
-                  {departmentPieData.map((entry, i) => (
-                    <Cell
-                      key={i}
-                      fill={departmentColors[i]}
-                      stroke={entry.name === selectedDepartment ? "#000" : ""}
-                      strokeWidth={entry.name === selectedDepartment ? 3 : 1}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend
-                  layout="horizontal"
-                  verticalAlign="bottom"
-                  align="center"
-                  iconType="circle"
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            {selectedDepartment && (
-              <p className="chart-info">
-                Selected Department: <strong>{selectedDepartment}</strong>
-              </p>
-            )}
-          </div>
+        {/* Department Pie Chart */}
+        <div className="chart-box">
+          <h3>Employees per Department</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
+              <Pie
+                data={departmentPieData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={3}
+                label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                onClick={(data) => setSelectedDepartment(data.name)}
+              >
+                {departmentPieData.map((entry, i) => (
+                  <Cell
+                    key={i}
+                    fill={departmentColors[i]}
+                    stroke={entry.name === selectedDepartment ? "#000" : ""}
+                    strokeWidth={entry.name === selectedDepartment ? 3 : 1}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="circle" />
+            </PieChart>
+          </ResponsiveContainer>
+          {selectedDepartment && (
+            <p className="chart-info">
+              Selected Department: <strong>{selectedDepartment}</strong>
+            </p>
+          )}
+        </div>
 
-          <div className="chart-card">
-            <h3>Average Hourly Rate by Department</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={avgHourlyData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar
-                  dataKey="avgRate"
-                  onClick={(data) => setSelectedBar(data.name)}
-                >
-                  {avgHourlyData.map((entry, i) => (
-                    <Cell
-                      key={i}
-                      fill={entry.name === selectedBar ? "#FF6F91" : "#845EC2"}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            {selectedBar && (
-              <p className="chart-info">
-                Selected Department (Hourly Rate):{" "}
-                <strong>{selectedBar}</strong>
-              </p>
-            )}
-          </div>
+        {/* Average Hourly Rate Bar Chart */}
+        <div className="chart-card">
+          <h3>Average Hourly Rate by Department</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={avgHourlyData}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="avgRate" onClick={(data) => setSelectedBar(data.name)}>
+                {avgHourlyData.map((entry, i) => (
+                  <Cell key={i} fill={entry.name === selectedBar ? "#FF6F91" : "#845EC2"} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          {selectedBar && (
+            <p className="chart-info">
+              Selected Department (Hourly Rate): <strong>{selectedBar}</strong>
+            </p>
+          )}
+        </div>
 
-          <div className="chart-card">
-            <h3>Managers and Employees</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              <PieChart>
-                <Pie
-                  data={roleDistributionData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={90}
-                  label
-                  onClick={(data) => setSelectedRole(data.name)}
-                >
-                  {roleDistributionData.map((entry, i) => (
-                    <Cell
-                      key={i}
-                      fill={roleColors[i]}
-                      stroke={entry.name === selectedRole ? "#000" : ""}
-                      strokeWidth={entry.name === selectedRole ? 3 : 1}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-            {selectedRole && (
-              <p className="chart-info">
-                Selected Role: <strong>{selectedRole}</strong>
-              </p>
-            )}
-          </div>
+        {/* Role Pie Chart */}
+        <div className="chart-card">
+          <h3>Managers and Employees</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
+              <Pie
+                data={roleDistributionData}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={90}
+                label
+                onClick={(data) => setSelectedRole(data.name)}
+              >
+                {roleDistributionData.map((entry, i) => (
+                  <Cell
+                    key={i}
+                    fill={roleColors[i]}
+                    stroke={entry.name === selectedRole ? "#000" : ""}
+                    strokeWidth={entry.name === selectedRole ? 3 : 1}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+          {selectedRole && (
+            <p className="chart-info">
+              Selected Role: <strong>{selectedRole}</strong>
+            </p>
+          )}
         </div>
 
         <section className="dashboard-cards small">
@@ -258,13 +243,7 @@ const DashboardCharts = () => {
         <footer>
           <div className="footerContain">
             <div className="socialIcons">
-              {[
-                faFacebook,
-                faInstagram,
-                faTwitter,
-                faGooglePlus,
-                faYoutube,
-              ].map((icon, i) => (
+              {[faFacebook, faInstagram, faTwitter, faGooglePlus, faYoutube].map((icon, i) => (
                 <button key={i} onClick={() => console.log(icon.iconName)}>
                   <FontAwesomeIcon icon={icon} size="2x" />
                 </button>
@@ -273,16 +252,16 @@ const DashboardCharts = () => {
             <div className="footerNav">
               <ul>
                 <li>
-                  <Link to="/homepage">Home</Link>
+                  <Link href="/homepage">Home</Link>
                 </li>
                 <li>
-                  <Link to="/news">News</Link>
+                  <Link href="/news">News</Link>
                 </li>
                 <li>
-                  <Link to="/about">About</Link>
+                  <Link href="/about">About</Link>
                 </li>
                 <li>
-                  <Link to="/contact">Contact Us</Link>
+                  <Link href="/contact">Contact Us</Link>
                 </li>
               </ul>
             </div>
