@@ -38,7 +38,7 @@ const Sidebar = () => {
         {/* Logo with Link to Homepage */}
         <div className="logo">
           <Link to="/HomePage" onClick={toggleSidebar}>
-            <img src="/Logooo-removebg-preview.png" alt="Logo" />
+            <img src="../../public/Logooo-removebg-preview.png" alt="Logo" />
           </Link>
         </div>
 

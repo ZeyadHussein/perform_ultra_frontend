@@ -54,7 +54,7 @@ const Login = () => {
 
   return (
     <div className="signup-container">
-      <img src="/Logooo-removebg-preview.png" alt="Logo" className="logo" />
+      <img src="../../public/Logooo-removebg-preview.png" alt="Perform Ultra logo featuring purple and blue geometric shapes" className="logo" />
       <h2>Login</h2>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit}>
@@ -83,11 +83,11 @@ const Login = () => {
       </p>
       <div className="social-login">
         <button className="google-btn">
-          <img src="/Google.png" alt="Google" />
+          <img src="../../public/Google.png" alt="Google logo" />
           Sign in with Google
         </button>
         <button className="apple-btn">
-          <img src="/apple.png" alt="Apple" />
+          <img src="../../public/apple.png" alt="Apple logo" />
           Sign in with Apple
         </button>
       </div>
