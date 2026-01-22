@@ -25,7 +25,7 @@ const ChatPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [activeTab, setActiveTab] = useState('chats'); // 'chats' or 'users'
   const messagesEndRef = useRef(null);
-  
+
   // Get user ID from localStorage
   const userId = localStorage.getItem('userId');
 
@@ -37,42 +37,47 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (!userId) return;
-    
+
     // Fetch all users
-    axios.get('http://localhost:5000/api/users', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    .then(res => {
-      // Filter out the current user
-      const otherUsers = res.data.filter(user => user.User_ID != userId);
-      setAllUsers(otherUsers);
-    })
-    .catch(err => console.error('Error fetching users:', err));
+    axios
+      .get('http://localhost:5000/api/users', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+      .then((res) => {
+        // Filter out the current user
+        const otherUsers = res.data.filter((user) => user.User_ID !== userId);
+        setAllUsers(otherUsers);
+      })
+      .catch((err) => console.error('Error fetching users:', err));
   }, [userId]);
 
   useEffect(() => {
     if (!selectedUser || !userId) return;
-    axios.get(`http://localhost:5000/api/chats/${userId}/${selectedUser.User_ID}`)
-      .then(res => setMessages(res.data))
-      .catch(err => console.error('Error fetching messages:', err));
+
+    axios
+      .get(`http://localhost:5000/api/chats/${userId}/${selectedUser.User_ID}`)
+      .then((res) => setMessages(res.data))
+      .catch((err) => console.error('Error fetching messages:', err));
   }, [selectedUser, userId]);
 
   const sendMessage = () => {
     if (!newMessage.trim() || !selectedUser || !userId) return;
+
     const messageData = {
       Sender_ID: userId,
       Receiver_ID: selectedUser.User_ID,
       Message: newMessage.trim(),
     };
 
-    axios.post('http://localhost:5000/api/chats', messageData)
-      .then(res => {
-        setMessages(prev => [...prev, res.data]);
+    axios
+      .post('http://localhost:5000/api/chats', messageData)
+      .then((res) => {
+        setMessages((prev) => [...prev, res.data]);
         setNewMessage('');
       })
-      .catch(err => console.error('Error sending message:', err));
+      .catch((err) => console.error('Error sending message:', err));
   };
 
   return (
@@ -82,25 +87,27 @@ const ChatPage = () => {
         <div className="chat-list-wrapper">
           <div className="chat-header">Messages</div>
           <div className="chat-tabs">
-            <button 
+            <button
               className={`tab-button ${activeTab === 'chats' ? 'active' : ''}`}
               onClick={() => setActiveTab('chats')}
             >
               Chats
             </button>
-            <button 
+            <button
               className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >
               All Users
             </button>
           </div>
-          
+
           <div className="chat-list">
-            {(activeTab === 'users' ? allUsers : allUsers).map(user => (
+            {(activeTab === 'users' ? allUsers : allUsers).map((user) => (
               <div
                 key={user.User_ID}
-                className={`chat-item ${selectedUser?.User_ID === user.User_ID ? 'selected' : ''}`}
+                className={`chat-item ${
+                  selectedUser?.User_ID === user.User_ID ? 'selected' : ''
+                }`}
                 onClick={() => setSelectedUser(user)}
               >
                 <div className={`avatar ${getAvatarColorClass(user.User_ID)}`}>
@@ -122,15 +129,24 @@ const ChatPage = () => {
                 Chat with {selectedUser.Name} ({selectedUser.Role})
               </div>
               <div className="messages-container">
-                {messages.length === 0 && <p className="no-messages">No messages yet. Start the conversation!</p>}
-                {messages.map(msg => (
+                {messages.length === 0 && (
+                  <p className="no-messages">
+                    No messages yet. Start the conversation!
+                  </p>
+                )}
+                {messages.map((msg) => (
                   <div
                     key={msg.Chat_ID}
-                    className={`message ${msg.Sender_ID == userId ? 'sent' : 'received'}`}
+                    className={`message ${
+                      msg.Sender_ID === userId ? 'sent' : 'received'
+                    }`}
                   >
                     {msg.Message}
                     <div className="message-time">
-                      {new Date(msg.Time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.Time).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
                     </div>
                   </div>
                 ))}
@@ -140,18 +156,18 @@ const ChatPage = () => {
                 <input
                   type="text"
                   value={newMessage}
-                  onChange={e => setNewMessage(e.target.value)}
+                  onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
-                  onKeyDown={e => e.key === 'Enter' && sendMessage()}
+                  onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                 />
                 <button onClick={sendMessage}>Send</button>
               </div>
             </>
           ) : (
             <div className="select-chat-prompt">
-              {activeTab === 'users' 
-                ? "Select a user to start chatting" 
-                : "Select a chat or user to start messaging"}
+              {activeTab === 'users'
+                ? 'Select a user to start chatting'
+                : 'Select a chat or user to start messaging'}
             </div>
           )}
         </div>
