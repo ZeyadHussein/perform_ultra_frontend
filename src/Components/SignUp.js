@@ -1,13 +1,12 @@
 
 import React, { useState } from "react";
-import { useRouter } from "/navigation";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "../Styles/Signup.css";
 
 
 const SignUp = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -47,7 +46,7 @@ const SignUp = () => {
       await axios.post(`${API_URL}/adduser`, payload);
 
       alert("✅ Signup successful! Redirecting...");
-      router.push("/login");
+      navigate("/login");
     } catch (error) {
       console.error(
         "❌ Signup error:",

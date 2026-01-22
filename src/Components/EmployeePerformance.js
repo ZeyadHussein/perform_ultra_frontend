@@ -3,12 +3,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
 import "../Styles/performance.css";
-import { useRouter } from "/navigation";
+// eslint-disable-next-line no-unused-vars
+import { useNavigate, Link } from "react-router-dom";
+
 
 const EmployeePerformance = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const navigate = useNavigate();
   const API_URL =
     process.env.REACT_APP_API_URL ||
     "https://perform-ultra-backend.vercel.app/api";
@@ -17,7 +19,7 @@ const EmployeePerformance = () => {
     const fetchPerformanceData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login"); // Redirect if not logged in
+        navigate("/login"); // Redirect if not logged in
         return;
       }
 
@@ -36,7 +38,7 @@ const EmployeePerformance = () => {
     };
 
     fetchPerformanceData();
-  }, [router, API_URL]);
+  }, [navigate, API_URL]);
 
   return (
     <div className="performance-container">
