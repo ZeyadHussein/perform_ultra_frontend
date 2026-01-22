@@ -8,7 +8,7 @@ import {
   faInstagram,
   faTwitter,
   faGooglePlus,
-  faYoutube
+  faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext";
@@ -23,9 +23,12 @@ const Feedback = () => {
   useEffect(() => {
     const fetchUserFeedback = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/userfeedback", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await axios.get(
+          "http://localhost:5000/api/userfeedback",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         setFeedbacks(response.data);
       } catch (error) {
         console.error("Error fetching feedback:", error);
@@ -39,7 +42,10 @@ const Feedback = () => {
     <>
       <div className={`feedback-page ${darkMode ? "dark-mode" : ""}`}>
         {/* Mobile Menu Toggle */}
-        <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        <button
+          className="menu-toggle"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
           <FaBars />
         </button>
 
@@ -57,12 +63,17 @@ const Feedback = () => {
               <div className="feedback-container">
                 {feedbacks.length > 0 ? (
                   feedbacks.map((feedback, index) => (
-                    <div key={feedback.feedback_ID || index} className="feedback-card">
+                    <div
+                      key={feedback.feedback_ID || index}
+                      className="feedback-card"
+                    >
                       <div className="feedback-header">
                         <span className="feedback-role">USER</span>
                       </div>
                       <p className="feedback-text">{feedback.feedback_text}</p>
-                      {index !== feedbacks.length - 1 && <hr className="feedback-divider" />}
+                      {index !== feedbacks.length - 1 && (
+                        <hr className="feedback-divider" />
+                      )}
                     </div>
                   ))
                 ) : (
@@ -97,10 +108,18 @@ const Feedback = () => {
 
           <div className="footerNav">
             <ul>
-              <li><Link to="/Homepage">Home</Link></li>
-              <li><Link to="/news">News</Link></li>
-              <li><Link to="/about">About</Link></li>
-              <li><Link to="/contact">Contact Us</Link></li>
+              <li>
+                <Link to="/Homepage">Home</Link>
+              </li>
+              <li>
+                <Link to="/news">News</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+              <li>
+                <Link to="/contact">Contact Us</Link>
+              </li>
             </ul>
           </div>
 

@@ -25,12 +25,15 @@ const AddFeedback = () => {
   const [success, setSuccess] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Backend API URL from environment variable
+  const API_URL = process.env.REACT_APP_API_URL || "https://perform-ultra-backend.vercel.app/api";
+
   // Fetch users for recipient dropdown
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/users", {
+        const response = await axios.get(`${API_URL}/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);
@@ -49,7 +52,7 @@ const AddFeedback = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [API_URL]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,7 +70,7 @@ const AddFeedback = () => {
 
       // Send feedback to the selected user
       await axios.post(
-        "http://localhost:5000/api/addfeed",
+        `${API_URL}/addfeed`,
         {
           feedback_text: feedback.feedback_text,
           recipient_id: feedback.recipient, // Use recipient from the selected dropdown

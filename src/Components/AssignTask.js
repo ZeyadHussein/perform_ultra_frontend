@@ -20,7 +20,7 @@ const AssignTask = () => {
     priority: "Low",
     date: "",
     assignee: "",
-    status: "Not Started", // <-- Added status here with default
+    status: "Not Started", // Default status
   });
 
   const [users, setUsers] = useState([]);
@@ -29,11 +29,15 @@ const AssignTask = () => {
   const [success, setSuccess] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Backend API URL from environment variable
+  const API_URL = process.env.REACT_APP_API_URL || "https://perform-ultra-backend.vercel.app/api";
+
+  // Fetch users for assignee dropdown
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/users", {
+        const response = await axios.get(`${API_URL}/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);
@@ -52,7 +56,7 @@ const AssignTask = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [API_URL]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,15 +76,15 @@ const AssignTask = () => {
         ? new Date(task.date).toISOString().split("T")[0]
         : null;
 
-      // 1. Create the task with status included
+      // 1. Create the task
       const taskResponse = await axios.post(
-        "http://localhost:5000/api/add-task",
+        `${API_URL}/add-task`,
         {
           task_title: task.title,
           description: task.description,
           Due_date: formattedDate,
           priority: task.priority,
-          status: task.status,  // <-- Send status here
+          status: task.status,
         },
         {
           headers: {
@@ -92,13 +96,13 @@ const AssignTask = () => {
 
       const taskId = taskResponse.data.taskId;
 
-      // 2. Assign the task to the selected user with matching status
+      // 2. Assign the task to selected user
       await axios.post(
-        "http://localhost:5000/api/add-task-assignment",
+        `${API_URL}/add-task-assignment`,
         {
           task_ID: taskId,
           User_ID: task.assignee,
-          completion_status: task.status, // use the selected status here
+          completion_status: task.status,
         },
         {
           headers: {
@@ -110,7 +114,6 @@ const AssignTask = () => {
 
       setSuccess(`✅ Task created and assigned successfully! Task ID: ${taskId}`);
 
-      // Reset form with first user pre-selected (if any) and status reset
       setTask({
         title: "",
         description: "",
@@ -230,7 +233,6 @@ const AssignTask = () => {
               </select>
             </div>
 
-            {/* NEW: Status Select */}
             <div className="form-group">
               <label htmlFor="status">Status:</label>
               <select

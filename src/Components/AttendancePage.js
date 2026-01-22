@@ -1,15 +1,17 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
-import Sidebar from './Sidebar';
-import '../Styles/AttendancePage.css';
+import React, { useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import Sidebar from "./Sidebar";
+import "../Styles/AttendancePage.css";
 
 const AttendancePage = () => {
   const [weeks, setWeeks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getUserId = () => {
-    return localStorage.getItem('userId');
-  };
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://perform-ultra-backend.vercel.app/api";
+
+  const getUserId = () => localStorage.getItem("userId");
 
   const groupAttendanceIntoWeeks = useCallback((data) => {
     const weeks = [];
@@ -44,35 +46,32 @@ const AttendancePage = () => {
 
   useEffect(() => {
     const userId = getUserId();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     if (userId && token) {
-      axios.get(`http://localhost:5000/api/attendance/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      axios
+        .get(`${API_URL}/attendance/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((response) => {
           const data = response.data;
           const groupedWeeks = groupAttendanceIntoWeeks(data);
           setWeeks(groupedWeeks);
         })
         .catch((error) => {
-          console.error('Error fetching attendance data:', error);
+          console.error("Error fetching attendance data:", error);
           if (error.response?.status === 403) {
-            alert('You are not authorized to access this attendance data.');
+            alert("You are not authorized to access this attendance data.");
           } else {
-            alert('Failed to fetch attendance data.');
+            alert("Failed to fetch attendance data.");
           }
         })
-        .finally(() => {
-          setLoading(false);
-        });
+        .finally(() => setLoading(false));
     } else {
-      alert('User ID or token missing. Please log in again.');
+      alert("User ID or token missing. Please log in again.");
       setLoading(false);
     }
-  }, [groupAttendanceIntoWeeks]);
+  }, [groupAttendanceIntoWeeks, API_URL]);
 
   const AttendanceTable = ({ title, data }) => (
     <section className="attendance">
@@ -120,11 +119,7 @@ const AttendancePage = () => {
             const weekTitle = `${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
 
             return (
-              <AttendanceTable
-                key={index}
-                title={weekTitle}
-                data={weekData}
-              />
+              <AttendanceTable key={index} title={weekTitle} data={weekData} />
             );
           })
         ) : (

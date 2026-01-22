@@ -3,64 +3,51 @@ import Sidebar from './Sidebar';
 import axios from 'axios';
 import '../Styles/ChatPage.css';
 
-// Helper to generate initials from name
 const getInitials = (name) => {
   if (!name) return '';
   const names = name.trim().split(' ');
-  if (names.length === 1) return names[0][0];
-  return names[0][0] + names[1][0];
+  return names.length === 1 ? names[0][0] : names[0][0] + names[1][0];
 };
 
-// Helper to assign avatar color class based on user ID (for consistent colors)
 const getAvatarColorClass = (userId) => {
   const colors = ['color-1', 'color-2', 'color-3', 'color-4'];
-  if (!userId) return colors[0];
-  return colors[userId % colors.length];
+  return userId ? colors[userId % colors.length] : colors[0];
 };
 
 const ChatPage = () => {
+  const API_URL = process.env.REACT_APP_API_URL || "https://perform-ultra-backend.vercel.app/api";
   const [allUsers, setAllUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [activeTab, setActiveTab] = useState('chats'); // 'chats' or 'users'
+  const [activeTab, setActiveTab] = useState('chats'); 
   const messagesEndRef = useRef(null);
-
-  // Get user ID from localStorage
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   useEffect(() => {
     if (!userId) return;
 
-    // Fetch all users
-    axios
-      .get('http://localhost:5000/api/users', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      })
-      .then((res) => {
-        // Filter out the current user
-        const otherUsers = res.data.filter((user) => user.User_ID !== userId);
+    axios.get(`${API_URL}/users`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    })
+      .then(res => {
+        const otherUsers = res.data.filter(u => u.User_ID !== userId);
         setAllUsers(otherUsers);
       })
-      .catch((err) => console.error('Error fetching users:', err));
-  }, [userId]);
+      .catch(err => console.error('Error fetching users:', err));
+  }, [userId, API_URL]);
 
   useEffect(() => {
     if (!selectedUser || !userId) return;
 
-    axios
-      .get(`http://localhost:5000/api/chats/${userId}/${selectedUser.User_ID}`)
-      .then((res) => setMessages(res.data))
-      .catch((err) => console.error('Error fetching messages:', err));
-  }, [selectedUser, userId]);
+    axios.get(`${API_URL}/chats/${userId}/${selectedUser.User_ID}`)
+      .then(res => setMessages(res.data))
+      .catch(err => console.error('Error fetching messages:', err));
+  }, [selectedUser, userId, API_URL]);
 
   const sendMessage = () => {
     if (!newMessage.trim() || !selectedUser || !userId) return;
@@ -71,13 +58,12 @@ const ChatPage = () => {
       Message: newMessage.trim(),
     };
 
-    axios
-      .post('http://localhost:5000/api/chats', messageData)
-      .then((res) => {
-        setMessages((prev) => [...prev, res.data]);
+    axios.post(`${API_URL}/chats`, messageData)
+      .then(res => {
+        setMessages(prev => [...prev, res.data]);
         setNewMessage('');
       })
-      .catch((err) => console.error('Error sending message:', err));
+      .catch(err => console.error('Error sending message:', err));
   };
 
   return (
