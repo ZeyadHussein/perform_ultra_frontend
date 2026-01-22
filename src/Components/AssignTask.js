@@ -48,7 +48,7 @@ const AssignTask = () => {
           }));
         }
       } catch (err) {
-        console.error("❌ Failed to fetch users:", err);
+        console.error("Failed to fetch users:", err);
         setError("Failed to load users. Please try again.");
       } finally {
         setLoading(false);
