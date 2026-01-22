@@ -1,9 +1,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "/navigation";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "../Styles/Signup.css";
-import Link from "/link";
+
 
 const SignUp = () => {
   const router = useRouter();

@@ -10,7 +10,8 @@ import {
   faGooglePlus,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-import Link from "/link";
+import { Link } from "react-router-dom";
+
 import "../Styles/EmployeeList.css";
 
 const ManagerList = () => {

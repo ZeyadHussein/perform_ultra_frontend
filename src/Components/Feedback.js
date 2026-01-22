@@ -11,7 +11,8 @@ import {
   faGooglePlus,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-import Link from "/link";
+import { Link } from "react-router-dom";
+
 import { ThemeContext } from "../context/ThemeContext";
 import "../Styles/Feedback.css";
 
