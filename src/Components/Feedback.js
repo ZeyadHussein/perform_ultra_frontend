@@ -1,4 +1,4 @@
-"use client"; // Required for client-side hooks
+
 import React, { useEffect, useState, useContext } from "react";
 import Sidebar from "./Sidebar";
 import axios from "axios";
@@ -22,7 +22,7 @@ const Feedback = () => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const API_URL =
-    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.REACT_APP_API_URL ||
     "https://perform-ultra-backend.vercel.app/api";
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-"use client"; // Enables client-side hooks
+
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
@@ -15,7 +15,7 @@ import "../Styles/AssignTask.css";
 import bgImage from "../images/bg.jpg";
 
 axios.defaults.baseURL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 const TeamPage = () => {
   const [team, setTeam] = useState({

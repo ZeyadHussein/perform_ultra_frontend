@@ -1,4 +1,4 @@
-"use client"; // required for Next.js client components
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
@@ -14,7 +14,9 @@ import Sidebar from "./Sidebar";
 import "../Styles/EmployeeList.css";
 
 const EmployeeList = () => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://perform-ultra-backend.vercel.app/api";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://perform-ultra-backend.vercel.app/api";
 
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -71,7 +73,10 @@ const EmployeeList = () => {
         ) : error ? (
           <div className="error-container">
             <p className="error-message">{error}</p>
-            <button className="retry-button" onClick={() => window.location.reload()}>
+            <button
+              className="retry-button"
+              onClick={() => window.location.reload()}
+            >
               Retry
             </button>
           </div>
@@ -91,7 +96,9 @@ const EmployeeList = () => {
                             <span className="employee-details">
                               ${emp.hourly_rate}/hr | {emp.Email}
                             </span>
-                            {emp.Role && <span className="employee-role">{emp.Role}</span>}
+                            {emp.Role && (
+                              <span className="employee-role">{emp.Role}</span>
+                            )}
                           </div>
                         </li>
                       ))}
@@ -105,7 +112,13 @@ const EmployeeList = () => {
         <footer>
           <div className="footerContainer">
             <div className="socialIcons">
-              {[faFacebook, faInstagram, faTwitter, faGooglePlus, faYoutube].map((icon, i) => (
+              {[
+                faFacebook,
+                faInstagram,
+                faTwitter,
+                faGooglePlus,
+                faYoutube,
+              ].map((icon, i) => (
                 <button key={i} onClick={() => console.log(icon.iconName)}>
                   <FontAwesomeIcon icon={icon} size="2x" />
                 </button>

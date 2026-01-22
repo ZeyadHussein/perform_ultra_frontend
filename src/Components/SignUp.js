@@ -1,4 +1,4 @@
-"use client"; // Enables client-side hooks
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -42,7 +42,7 @@ const SignUp = () => {
       };
 
       const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+        process.env.REACT_APP_API_URL || "http://localhost:5000/api";
       await axios.post(`${API_URL}/adduser`, payload);
 
       alert("✅ Signup successful! Redirecting...");

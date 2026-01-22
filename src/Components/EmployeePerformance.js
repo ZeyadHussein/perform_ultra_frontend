@@ -1,4 +1,4 @@
-"use client"; // Required for client-side React hooks
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
@@ -9,7 +9,9 @@ const EmployeePerformance = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://perform-ultra-backend.vercel.app/api";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://perform-ultra-backend.vercel.app/api";
 
   useEffect(() => {
     const fetchPerformanceData = async () => {

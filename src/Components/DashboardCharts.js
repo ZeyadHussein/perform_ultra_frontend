@@ -1,4 +1,4 @@
-"use client"; // required for Next.js 13+ app directory for client-side hooks
+
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import axios from "axios";
@@ -37,7 +37,7 @@ const generateUniqueColors = (count) => {
 };
 
 const DashboardCharts = () => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://perform-ultra-backend.vercel.app/api";
+  const API_URL = process.env.REACT_APP_API_URL || "https://perform-ultra-backend.vercel.app/api";
 
   const [employees, setEmployees] = useState([]);
   const [managersWithUsers, setManagersWithUsers] = useState([]);

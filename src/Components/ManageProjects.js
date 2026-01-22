@@ -1,4 +1,4 @@
-"use client"; // For client-side hooks
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
@@ -16,7 +16,7 @@ const ManageProjects = () => {
   const [showProjects, setShowProjects] = useState(false);
 
   const API_URL =
-    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.REACT_APP_API_URL ||
     "https://perform-ultra-backend.vercel.app/api";
 
   // ✅ fetchProjects moved inside useEffect to fix ESLint warning

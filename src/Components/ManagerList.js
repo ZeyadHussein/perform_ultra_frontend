@@ -1,4 +1,4 @@
-"use client"; // Needed for client-side hooks
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
@@ -19,7 +19,7 @@ const ManagerList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
   useEffect(() => {
     const fetchData = async () => {
