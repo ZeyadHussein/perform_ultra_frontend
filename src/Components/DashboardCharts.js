@@ -22,7 +22,7 @@ import {
   faGooglePlus,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-import Link from "next/link";
+import Link from "/link";
 import "../Styles/Dashboard.css";
 
 const generateUniqueColors = (count) => {

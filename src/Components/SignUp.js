@@ -1,9 +1,9 @@
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "/navigation";
 import axios from "axios";
 import "../Styles/Signup.css";
-import Link from "next/link";
+import Link from "/link";
 
 const SignUp = () => {
   const router = useRouter();

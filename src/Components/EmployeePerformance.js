@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
 import "../Styles/performance.css";
-import { useRouter } from "next/navigation";
+import { useRouter } from "/navigation";
 
 const EmployeePerformance = () => {
   const [performanceData, setPerformanceData] = useState([]);
