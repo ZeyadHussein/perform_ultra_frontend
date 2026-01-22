@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"; // Import Axios
+import axios from "axios";
 import "../Styles/Login.css";
-import { jwtDecode } from "jwt-decode";
+import jwt_decode from "jwt-decode"; // fixed import
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,6 +11,9 @@ const Login = () => {
     password: "",
   });
   const [error, setError] = useState("");
+
+  // Use environment variable for backend URL
+  const API_URL = process.env.REACT_APP_API_URL || "https://perform-ultra-backend.vercel.app/api";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,18 +28,17 @@ const Login = () => {
     setError(""); // Reset error message
 
     try {
-      const response = await axios.post("http://localhost:5000/api/login", {
+      const response = await axios.post(`${API_URL}/login`, {
         Email: formData.email,
         Password: formData.password,
       });
 
       if (response.status === 200) {
         const { token, user } = response.data; // Get token and user data
-        const decodedToken = jwtDecode(token); // Decode JWT token to get user info
-        console.log("Decoded Token:", decodedToken); // Log decoded token for debugging
-        
-        localStorage.setItem("userId", decodedToken.id); // Store user ID
+        const decodedToken = jwt_decode(token); // Decode JWT token to get user info
+        console.log("Decoded Token:", decodedToken);
 
+        localStorage.setItem("userId", decodedToken.id); // Store user ID
         localStorage.setItem("token", token); // Store JWT token
         localStorage.setItem("user", JSON.stringify(user)); // Store user info
 
@@ -44,7 +46,9 @@ const Login = () => {
       }
     } catch (err) {
       console.error("Login Error:", err);
-      setError(err.response?.data?.message || "Invalid email or password. Please try again.");
+      setError(
+        err.response?.data?.message || "Invalid email or password. Please try again."
+      );
     }
   };
 
@@ -54,11 +58,29 @@ const Login = () => {
       <h2>Login</h2>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit}>
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
-        <button type="submit" className="signup-btn">Login</button>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit" className="signup-btn">
+          Login
+        </button>
       </form>
-      <p>Don't have an account? <Link to="/signup">Sign up here</Link></p>
+      <p>
+        Don't have an account? <Link to="/signup">Sign up here</Link>
+      </p>
       <div className="social-login">
         <button className="google-btn">
           <img src="/Google.png" alt="Google" />
