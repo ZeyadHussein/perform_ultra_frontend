@@ -129,7 +129,7 @@ const SignUp = () => {
       </form>
 
       <p>
-        Already have an account? <Link href="/login">Sign in here</Link>
+        Already have an account? <Link to="/login">Sign in here</Link>
       </p>
 
       <div className="social-login">

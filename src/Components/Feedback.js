@@ -106,16 +106,16 @@ const Feedback = () => {
           <div className="footerNav">
             <ul>
               <li>
-                <Link href="/homepage">Home</Link>
+                <Link to="/homepage">Home</Link>
               </li>
               <li>
-                <Link href="/news">News</Link>
+                <Link to="/news">News</Link>
               </li>
               <li>
-                <Link href="/about">About</Link>
+                <Link to="/about">About</Link>
               </li>
               <li>
-                <Link href="/contact">Contact Us</Link>
+                <Link to="/contact">Contact Us</Link>
               </li>
             </ul>
           </div>
